@@ -1,0 +1,28 @@
+---
+  - name: configure elk for servers
+  hosts: elkservers
+  become: true
+  tasks:
+  - name: docker.io
+    apt:
+      name: docker.io
+      state: present
+  - name: Install pip
+    apt:
+      name: python-pip
+      state: present
+  - name: Install Docker python module
+    pip:
+      name: docker
+      state: present
+  - name: Increase virtual memory
+    command: sysctl -w vm.max_map_count=262144
+  - name: download and launch a docker web container
+    docker_container:
+      name: sebp-elk
+      image: cyberxsecurity/dvwa
+      state: started
+      published_ports:
+        - 5601:5601
+        - 9200:9200
+        - 5044:5044
